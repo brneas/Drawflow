@@ -266,6 +266,7 @@ Mehtod | Description
 `removeNodeId(id)` | Remove node. Ex id: `node-x`
 `updateNodeDataFromId` | Update data element. Ex: `5, { name: 'Drawflow' }`
 `updateNodeHtmlFromId` | Update html attribute (does not update element).
+`updateNodeHtmlAndElementFromId` | Update html attribute and element.
 `addNodeInput(id)` | Add input to node. Ex id: `5`
 `addNodeOutput(id)` | Add output to node. Ex id: `5`
 `removeNodeInput(id, input_class)` | Remove input to node. Ex id: `5`, `input_2`

@@ -1538,18 +1538,22 @@ export default class Drawflow {
   }
 
   updateNodeHtmlFromId(id, newHtml) {
-  var moduleName = this.getModuleFromNodeId(id);
-  this.drawflow.drawflow[moduleName].data[id].html = newHtml;
+    var moduleName = this.getModuleFromNodeId(id);
+    this.drawflow.drawflow[moduleName].data[id].html = newHtml;
+  }
 
-  if (this.module === moduleName) {
-    const nodeElement = this.container.querySelector('#node-' + id);
+  updateNodeHtmlAndElementFromId(id, newHtml) {
+    var moduleName = this.getModuleFromNodeId(id);
+    this.drawflow.drawflow[moduleName].data[id].html = newHtml;
 
-    if (nodeElement) {
-      //nodeElement.innerHTML = newHtml;
+    if (this.module === moduleName) {
+      const nodeElement = this.container.querySelector('#node-' + id);
+
+      if (nodeElement) {
+      nodeElement.innerHTML = newHtml;
+      }
     }
   }
-}
-
 
   addNodeInput(id) {
     var moduleName = this.getModuleFromNodeId(id)
