@@ -1550,7 +1550,7 @@ export default class Drawflow {
       const nodeElement = this.container.querySelector('#node-' + id);
 
       if (nodeElement) {
-      nodeElement.innerHTML = newHtml;
+      nodeElement.children[1].innerHTML = newHtml;
       }
     }
   }
