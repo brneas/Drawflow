@@ -230,6 +230,11 @@ export default class Drawflow {
         if(e.shiftKey){
           if(this.selectedNodes.includes(this.ele_selected.id.slice(5))){
             this.node_selected.classList.remove("multiselected");
+
+            const index = array.indexOf(this.ele_selected.id.slice(5));
+            if (index > -1) {
+              this.selectedNodes.splice(index, 1);
+            }
           }
           else{
             this.node_selected.classList.add("multiselected");
@@ -591,13 +596,71 @@ export default class Drawflow {
       return false;
     }
     if (e.key === 'Delete' || (e.key === 'Backspace' && e.metaKey)) {
-      if(this.node_selected != null) {
+      if(this.selectedNodes.length > 0){
+        this.selectedNodes.forEach((item, i) => {
+          this.removeNodeId('node-' + item);
+        });
+        this.selectedNodes = new Array();
+      }
+      else if(this.node_selected != null) {
         if(this.first_click.tagName !== 'INPUT' && this.first_click.tagName !== 'TEXTAREA' && this.first_click.hasAttribute('contenteditable') !== true) {
           this.removeNodeId(this.node_selected.id);
         }
       }
       if(this.connection_selected != null) {
         this.removeConnection();
+      }
+    }
+    if(e.ctrlKey && e.key === 'c'){
+      //do nothing?
+    }
+    if(e.ctrlKey && e.key === 'v'){
+      if(this.selectedNodes.length > 0){
+        //Get new area
+        var e_pos_x = e.clientX;
+        var e_pos_y = e.clientY;
+        var pos_x = (this.pos_x) + (this.precanvas.clientWidth / (this.precanvas.clientWidth * this.zoom)) - (this.precanvas.getBoundingClientRect().x * (this.precanvas.clientWidth / (this.precanvas.clientWidth * this.zoom)));
+        var pos_y = (this.pos_y) + (this.precanvas.clientHeight / (this.precanvas.clientHeight * this.zoom)) - (this.precanvas.getBoundingClientRect().y * (this.precanvas.clientHeight / (this.precanvas.clientHeight * this.zoom)));
+
+        //Create new nodes
+        var newNodeIds = {};
+        this.selectedNodes.forEach((item, i) => {
+          var thisNode = this.getNodeFromId(item);
+          var thisNodeHtml = this.container.querySelectorAll('#node-' + item);
+          if(i === 0){
+            e_pos_x = thisNode.pos_x - pos_x;
+            e_pos_y = thisNode.pos_y - pos_y;
+          }
+          else{
+            pos_x = thisNode.pos_x - e_pos_x;
+            pos_y = thisNode.pos_y - e_pos_y;
+          }
+
+          var newId = this.addNode(thisNode.name, Object.keys(thisNode.inputs).length, Object.keys(thisNode.outputs).length, pos_x, pos_y, thisNode.class, thisNode.data, thisNode.html, false);
+          newNodeIds[item] = newId;
+        });
+
+        //Create and attach new connections
+        this.selectedNodes.forEach((item, i) => {
+          var thisNode = this.getNodeFromId(item);
+
+          Object.keys(thisNode.inputs).forEach((item, i) => {
+            thisNode.inputs[item].connections.forEach((conn, x) => {
+              if(Object.keys(newNodeIds).includes(conn["node"])){
+                this.addConnection(newNodeIds[conn["node"]], newNodeIds[thisNode.id], conn["input"], item);
+              }
+            });
+          });
+
+          Object.keys(thisNode.outputs).forEach((item, i) => {
+            thisNode.outputs[item].connections.forEach((conn, x) => {
+              if(Object.keys(newNodeIds).includes(conn["node"])){
+                this.addConnection(newNodeIds[thisNode.id], newNodeIds[conn["node"]], item, conn["output"]);
+              }
+            });
+          });
+        });
+
       }
     }
   }
