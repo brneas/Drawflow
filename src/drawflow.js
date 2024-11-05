@@ -659,6 +659,22 @@ export default class Drawflow {
               }
             });
           });
+
+          this.selectedNodes.forEach((item, i) => {
+            var thisNode = this.container.querySelectorAll('#node-' + item);
+            if(thisNode[0] != null){
+              thisNode[0].classList.remove("multiselected");
+            }
+            });
+          this.selectedNodes = new Array();
+          Object.keys(newNodeIds).forEach((item, x) => {
+            var tempId = newNodeIds[item];
+            var thisNode = this.container.querySelectorAll('#node-' + tempId);
+            if(thisNode[0] != null){
+              thisNode[0].classList.add("multiselected");
+            }
+            this.selectedNodes.push(tempId);
+          });
         });
 
       }
