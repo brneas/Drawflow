@@ -44,6 +44,7 @@ export default class Drawflow {
     this.zoom_min = 0.5;
     this.zoom_value = 0.1;
     this.zoom_last_value = 1;
+    this.selectedNodes = new Array();
 
     // Mobile
     this.evCache = new Array();
@@ -226,6 +227,24 @@ export default class Drawflow {
             this.drag = true;
           }
         }
+        if(e.shiftKey){
+          if(this.selectedNodes.includes(this.ele_selected.id.slice(5))){
+            this.node_selected.classList.remove("multiselected");
+          }
+          else{
+            this.node_selected.classList.add("multiselected");
+            this.selectedNodes.push(this.ele_selected.id.slice(5));
+          }
+        }
+        else if(!this.node_selected.classList.contains("multiselected")){
+          this.selectedNodes.forEach((item, i) => {
+            var thisNode = this.container.querySelectorAll('#node-' + item);
+            if(thisNode[0] != null){
+              thisNode[0].classList.remove("multiselected");
+            }
+            });
+          this.selectedNodes = new Array();
+        }
         break;
       case 'output':
         this.connection = true;
@@ -362,13 +381,27 @@ export default class Drawflow {
       this.pos_x = e_pos_x;
       this.pos_y = e_pos_y;
 
-      this.ele_selected.style.top = (this.ele_selected.offsetTop - y) + "px";
-      this.ele_selected.style.left = (this.ele_selected.offsetLeft - x) + "px";
+      if(this.selectedNodes.length > 0){
+        this.selectedNodes.forEach((item, i) => {
+          var thisNode = this.container.querySelectorAll('#node-' + item)[0];
+          thisNode.style.top = (thisNode.offsetTop - y) + "px";
+          thisNode.style.left = (thisNode.offsetLeft - x) + "px";
 
-      this.drawflow.drawflow[this.module].data[this.ele_selected.id.slice(5)].pos_x = (this.ele_selected.offsetLeft - x);
-      this.drawflow.drawflow[this.module].data[this.ele_selected.id.slice(5)].pos_y = (this.ele_selected.offsetTop - y);
+          thisNode.pos_x = (thisNode.offsetLeft - x);
+          thisNode.pos_y = (thisNode.offsetTop - y);
 
-      this.updateConnectionNodes(this.ele_selected.id)
+          this.updateConnectionNodes('node-' + item)
+        });
+      }
+      else{
+        this.ele_selected.style.top = (this.ele_selected.offsetTop - y) + "px";
+        this.ele_selected.style.left = (this.ele_selected.offsetLeft - x) + "px";
+
+        this.drawflow.drawflow[this.module].data[this.ele_selected.id.slice(5)].pos_x = (this.ele_selected.offsetLeft - x);
+        this.drawflow.drawflow[this.module].data[this.ele_selected.id.slice(5)].pos_y = (this.ele_selected.offsetTop - y);
+
+        this.updateConnectionNodes(this.ele_selected.id)
+      }
     }
 
     if(this.drag_point) {
