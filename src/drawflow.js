@@ -369,6 +369,10 @@ export default class Drawflow {
       var e_pos_y = e.clientY;
     }
 
+    if(e.target.tagName == 'TEXTAREA' && this.ele_selected != null){
+      this.ele_selected.style.width = (e.target.clientWidth + 40) + "px";
+      return;
+    }
 
     if(this.connection) {
       this.updateConnection(e_pos_x, e_pos_y);
