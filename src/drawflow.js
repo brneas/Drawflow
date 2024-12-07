@@ -231,7 +231,7 @@ export default class Drawflow {
           if(this.selectedNodes.includes(this.ele_selected.id.slice(5))){
             this.node_selected.classList.remove("multiselected");
 
-            const index = array.indexOf(this.ele_selected.id.slice(5));
+            const index = this.selectedNodes.indexOf(this.ele_selected.id.slice(5));
             if (index > -1) {
               this.selectedNodes.splice(index, 1);
             }
